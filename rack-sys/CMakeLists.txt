@@ -26,6 +26,8 @@ endif()
 if(NOT DEFINED VST3_SDK_PATH)
     set(VST3_SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/vst3sdk")
 endif()
+# Normalize backslashes to forward slashes for Windows compatibility
+file(TO_CMAKE_PATH "${VST3_SDK_PATH}" VST3_SDK_PATH)
 message(STATUS "VST3 SDK path: ${VST3_SDK_PATH}")
 set(HAVE_VST3_SDK FALSE)
 

@@ -56,8 +56,10 @@ fn main() {
         } else {
             env::current_dir().unwrap().join(&sdk_path)
         };
-        config.define("VST3_SDK_PATH", sdk_path_abs.to_str().unwrap());
-        eprintln!("Configuring CMake with VST3 SDK at: {}", sdk_path_abs.display());
+        // Normalize to forward slashes so CMake doesn't interpret backslashes as escapes on Windows
+        let sdk_path_str = sdk_path_abs.to_str().unwrap().replace('\\', "/");
+        config.define("VST3_SDK_PATH", &sdk_path_str);
+        eprintln!("Configuring CMake with VST3 SDK at: {}", sdk_path_str);
         true
     } else {
         eprintln!("VST3 SDK not available - VST3 support will be disabled");
