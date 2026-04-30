@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(rack_sys VERSION 0.1.0 LANGUAGES CXX)
 
-# C++20 required for aligned allocation and modern C++ features
-set(CMAKE_CXX_STANDARD 20)
+# C++17 matches the Steinberg VST3 SDK hosting examples and avoids MSVC C++20
+# char8_t incompatibilities in module_win32.cpp.
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # AudioUnit source files (Apple platforms only)
@@ -102,6 +103,15 @@ endif()
 
 # Build as static library for easy linking with Rust
 add_library(rack_sys STATIC ${RACK_SYS_SOURCES})
+
+if(MSVC)
+    target_compile_options(rack_sys PRIVATE /Zc:__cplusplus /EHsc)
+    target_compile_definitions(rack_sys PRIVATE
+        NOMINMAX
+        WIN32_LEAN_AND_MEAN
+        _CRT_SECURE_NO_WARNINGS
+    )
+endif()
 
 # Public headers
 target_include_directories(rack_sys PUBLIC
