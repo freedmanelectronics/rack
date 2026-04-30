@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
 project(rack_sys VERSION 0.1.0 LANGUAGES CXX)
 
 # C++17 matches the Steinberg VST3 SDK hosting examples and avoids MSVC C++20
@@ -105,11 +108,17 @@ endif()
 add_library(rack_sys STATIC ${RACK_SYS_SOURCES})
 
 if(MSVC)
-    target_compile_options(rack_sys PRIVATE /Zc:__cplusplus /EHsc)
+    set_property(TARGET rack_sys PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+    target_compile_options(rack_sys PRIVATE
+        /Zc:__cplusplus
+        /EHsc
+        $<$<CONFIG:Debug>:/U_DEBUG>
+    )
     target_compile_definitions(rack_sys PRIVATE
         NOMINMAX
         WIN32_LEAN_AND_MEAN
         _CRT_SECURE_NO_WARNINGS
+        _ITERATOR_DEBUG_LEVEL=0
     )
 endif()
 
